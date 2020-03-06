@@ -36,11 +36,15 @@ cd "$library"
 ### Performs the appropriate grep according to filetype and outputs to file
 find_terms() {
     if [[ "$1" =~ .*\.pdf ]]; then
-	pdfgrep -Hi "$grepterms" "$1" >> $outputfile
+        pdfgrep -Hi "$grepterms" "$1" >> $outputfile
     elif [[ "$1" =~ .*\.(txt|html) ]]; then 
-	grep -HiE "$grepterms" "$1" >> $outputfile
+        grep -HiE "$grepterms" "$1" >> $outputfile
     elif [[ "$1" =~ .*\.epub ]]; then
-	zipgrep -i "$zipterms" "$1" >> $outputfile
+        epubresults=$(zipgrep -i "$zipterms" "$1")
+        if [[ "$epubresults" != "" ]]; then
+            epubreturn="$1\n$epubresults"
+            echo $epubreturn >> $outputfile
+        fi
     fi
 }
 
